@@ -82,7 +82,7 @@ exports.claimItems = async (req, res) => {
                           name:"ElectroSolve",
                           address:"kumarautos105@gmail.com"
                         },
-                        to: "vsi351913@gmail.com",
+                        to: "vsi351913@gmail.com,mmunees9894@gmail.com",
                         subject:"Product Insufficient",
                         html:`<h3>Hello! Admin  </h3>
                         <p> ${item.name} is insufficient</p>
