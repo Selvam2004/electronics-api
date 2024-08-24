@@ -3,6 +3,7 @@
  const Controller = require('../Controllers/loginController');
 
  router.post("/registerUser",Controller.createUser);
+ router.post("/deleteUser",Controller.deleteUser);
  router.post("/login",Controller.login);
  router.get("/forgotPassword/:email",Controller.forgotPassword);
  router.post("/changePassword",Controller.changePassword);
