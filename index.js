@@ -22,6 +22,7 @@ mongoose.connect(url);
 
 app.use("/",require('./routes/loginRoutes'));  
 app.use("/home",require('./routes/homeRoutes'));  
+app.use("/dashboard",require('./routes/adminRoutes'));  
 
 app.listen(PORT,()=>{
     console.log('app is listening');
