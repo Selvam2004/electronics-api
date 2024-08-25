@@ -21,14 +21,11 @@ exports.getItems = async (req,res) =>{
 }
 
 exports.addItems = async (req, res) => {
-    const { name, mfgpart, supplier, mfg, category, available, imgUrl } = req.body;
+    const { name, mfgpart, supplier, mfg, category, available, imgUrl,linkToBuy } = req.body;
     try { 
-        const updateResult = await ItemModel.updateOne(
-            { name: name, mfg: mfg },
-            { $inc: { available: available } }
-        ) 
+        const check = await ItemModel.findOne({ name: name, mfg: mfg }) 
 
-        if (updateResult.matchedCount === 0) {  
+        if (!check) {  
             const esnum = await getESpart();
             let espart="";
             if(category==="General"){
@@ -40,10 +37,10 @@ exports.addItems = async (req, res) => {
             else {
                espart="ESE"+esnum;
             }
-            await ItemModel.create({ name, espart, mfgpart, supplier, mfg, category, available, imgUrl });
+            await ItemModel.create({ name, espart, mfgpart, supplier, mfg, category, available, imgUrl, linkToBuy});
             res.json("Item added successfully");
         } else {  
-            res.json("Available item increased");
+            res.json("Product is already Available");
         }
     } catch (err) { 
         console.log(err);
