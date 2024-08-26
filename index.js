@@ -9,7 +9,7 @@ dotenv.config({ path: './.env' });
 
 const PORT=process.env.port || 3500;
 
-app.use(cors({
+app.use(cors({ 
     origin:["http://localhost:3000"],
     methods:["GET","POST"],
     credentials:true

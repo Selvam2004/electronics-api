@@ -4,5 +4,6 @@ const Controller = require('../Controllers/adminController');
 
 router.post('/updateProduct',Controller.updateProduct);
 router.post('/deleteProduct',Controller.deleteProduct);
+router.get('/productHistory/:_id',Controller.productHistory);  
 
-module.exports=router;
+module.exports=router; 
