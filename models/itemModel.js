@@ -8,8 +8,10 @@ supplier:String,
 mfg:String,
 category:String,
 available:Number,
+minQuantity:Number,
 imgUrl:String,
-linkToBuy:String
+linkToBuy:String,
+linkToBuy2:String
 });
 
 const ItemModel = mongoose.model("items",ItemSchema);
