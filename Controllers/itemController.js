@@ -85,7 +85,7 @@ exports.claimItems = async (req, res) => {
             const mailContent = { 
                 from :{
                   name:"ElectroSolve",
-                  address:"kumarautos105@gmail.com"
+                  address:"stock.esolve@outlook.com"
                 },
                 to: `${admin}`,
                 subject:"Reclaiming Product",
@@ -110,7 +110,7 @@ exports.claimItems = async (req, res) => {
                     const mailContent = { 
                         from :{
                           name:"ElectroSolve",
-                          address:"kumarautos105@gmail.com"
+                          address:"stock.esolve@outlook.com"
                         },
                         to: `${admin}`,
                         subject:"Product Insufficient",
@@ -152,16 +152,30 @@ exports.claimItems = async (req, res) => {
     }
 };
 
-const transporter = nodemailer.createTransport({
-    service:"gmail",
-    host:"smtp.gmail.com",
-    port:587,
-    secure:false,
-    auth:{
-      user:"kumarautos105@gmail.com",
-      pass: process.env.EMAIL_PASSKEY
-    }, 
+// const transporter = nodemailer.createTransport({
+//     service:"gmail",
+//     host:"smtp.gmail.com",
+//     port:587,
+//     secure:false,
+//     auth:{
+//       user:"kumarautos105@gmail.com",
+//       pass: process.env.EMAIL_PASSKEY
+//     }, 
+//     tls: {
+//       rejectUnauthorized: false
+//     }
+//   }) 
+  const transporter = nodemailer.createTransport({
+    service: "Outlook365",
+    host: "smtp.office365.com",
+    port: 587,
+    secure: false,
+    auth: {
+      user: "stock.esolve@outlook.com",
+      pass: process.env.EMAIL_PASSKEY,  
+    },
     tls: {
-      rejectUnauthorized: false
-    }
-  }) 
+      ciphers: 'SSLv3', 
+      rejectUnauthorized: false,
+    },
+  });
