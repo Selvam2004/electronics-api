@@ -2,8 +2,8 @@ const ItemModel = require("../models/itemModel");
 const ProjectModel = require("../models/projectModel");
 
 exports.updateProduct = async(req,res)=>{
-    const {_id,name,mfg,mfgpart,supplier,linkToBuy,imgUrl,category,available}=req.body; 
-    const update = await ItemModel.updateOne({_id:_id},{name:name,mfg:mfg,mfgpart:mfgpart,supplier:supplier,linkToBuy:linkToBuy,imgUrl:imgUrl,category:category,available:available})
+    const {_id,name,mfg,mfgpart,supplier,linkToBuy,linkToBuy2,imgUrl,category,available,minQuantity}=req.body; 
+    const update = await ItemModel.updateOne({_id:_id},{name:name,mfg:mfg,mfgpart:mfgpart,supplier:supplier,linkToBuy:linkToBuy,linkToBuy2:linkToBuy2,imgUrl:imgUrl,category:category,available:available,minQuantity:minQuantity})
     if(update.matchedCount==0){
         res.json("Product not Found");
     }

@@ -23,7 +23,7 @@ exports.getItems = async (req,res) =>{
 }
 
 exports.addItems = async (req, res) => {
-    const { name, mfgpart, supplier, mfg, category, available, imgUrl,linkToBuy } = req.body;
+    const { name, mfgpart, supplier, mfg, category, available, imgUrl,linkToBuy ,linkToBuy2,minQuantity } = req.body;
     try { 
         const check = await ItemModel.findOne({ name: name, mfg: mfg }) 
 
@@ -39,7 +39,7 @@ exports.addItems = async (req, res) => {
             else {
                espart="ESE"+esnum;
             }
-            await ItemModel.create({ name, espart, mfgpart, supplier, mfg, category, available, imgUrl, linkToBuy});
+            await ItemModel.create({ name, espart, mfgpart, supplier, mfg, category, available, imgUrl, linkToBuy,linkToBuy2,minQuantity });
             res.json("Item added successfully");
         } else {  
             res.json("Product is already Available");
@@ -71,9 +71,9 @@ const getAdmin = async () => {
 };
  
 exports.claimItems = async (req, res) => {
-    const { name, mfg, projectName, designerName, quantity } = req.body;
+    const { name, mfg, projectName, designerName, quantity} = req.body;
     const admin=await getAdmin();
-    console.log(admin)
+    const date=new Date().toLocaleString();
     try { 
         const existingItemInProject = await ProjectModel.findOne({
             projectName: projectName,
@@ -132,7 +132,7 @@ exports.claimItems = async (req, res) => {
          if (existingProject) { 
             await ProjectModel.updateOne(
                 { projectName: projectName },
-                { $push: { itemsTaken: { name: name, mfg: mfg, quantity: quantity } } }
+                { $push: { itemsTaken: { name: name, mfg: mfg, quantity: quantity ,dateofTaken:date} } }
             );
 
             return res.json("Item claimed successfully.");
@@ -140,7 +140,8 @@ exports.claimItems = async (req, res) => {
             await ProjectModel.create({
                 projectName: projectName,
                 designerName: designerName,
-                itemsTaken: [{ name: name, mfg: mfg, quantity: quantity }]
+                createdAt:date,
+                itemsTaken: [{ name: name, mfg: mfg, quantity: quantity,dateofTaken:date }]
             });
             return res.json("Item claimed successfully and new project created.");
         } 
@@ -163,5 +164,4 @@ const transporter = nodemailer.createTransport({
     tls: {
       rejectUnauthorized: false
     }
-  })
- 
+  }) 

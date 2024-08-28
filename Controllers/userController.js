@@ -12,7 +12,7 @@ exports.userData = (req, res) => {
             return res.json({ status: "Error", message: "Token verification failed", error: err.message });
         }
 
-        if (decoded) { 
+        if (decoded) {  
             return res.json({
                 status: "Success",
                 name: decoded.name,

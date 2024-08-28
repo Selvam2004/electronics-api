@@ -94,12 +94,12 @@ exports.login = async (req, res) => {
       if (user) {
         bcrypt.compare(password, user.password, (err, response) => {
           if (response) {
-            bcrypt.compare("user", user.access, (err, result) => {
+            bcrypt.compare("admin", user.access, (err, result) => {
               let role = "";
               if (result) {
-                role = "user";
-              } else {
                 role = "admin";
+              } else {
+                role = "user";
               }
               const token = jwt.sign(
                 {
