@@ -68,4 +68,8 @@ exports.productHistory = async (req, res) => {
   }
 };
 
-exports.upload = (req, res) => {};
+exports.getProjects = async(req,res)=>{
+  await ProjectModel.find({})
+  .then(data=>res.json(data))
+  .catch(err=>res.json(err))
+}
