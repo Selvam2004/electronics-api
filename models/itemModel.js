@@ -9,9 +9,17 @@ mfg:String,
 category:String,
 available:Number,
 minQuantity:Number,
-imgUrl:String,
+image:{
+    data: Buffer,
+    contentType: String,
+},
 linkToBuy:String,
-linkToBuy2:String
+linkToBuy2:String,
+history:[{
+    addedBy:String,
+    quantity:Number,
+    dateofAdding:String
+}]
 });
 
 const ItemModel = mongoose.model("items",ItemSchema);

@@ -7,6 +7,7 @@
  router.post("/login",Controller.login);
  router.get("/forgotPassword/:email",Controller.forgotPassword);
  router.post("/changePassword",Controller.changePassword);
+
  
 
  module.exports=router;

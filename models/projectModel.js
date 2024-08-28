@@ -8,7 +8,8 @@ const ProjectSchema =new mongoose.Schema({
         {
             name:String,
             mfg:String,
-            dateofTaken:String,   
+            dateofTaken:String,  
+            takenBy:String, 
             quantity:{
                 type:Number,
                 default:0

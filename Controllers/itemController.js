@@ -3,6 +3,9 @@ const ProjectModel = require("../models/projectModel");
 const bcrypt = require('bcrypt');
 const userModel = require("../models/userModel");
 const nodemailer = require("nodemailer");
+const multer = require('multer');
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage ,limits: { fileSize: 300 * 1024 },}).single('image');
 
 const getESpart = async () => {
     let num = ''; 
@@ -12,18 +15,47 @@ const getESpart = async () => {
   
     return num;
 };
-  
+    
 
 exports.getItems = async (req,res) =>{
-    ItemModel.find({})
-    .then(items =>{
-        res.json(items);
-    })
-    .catch(err => res.json(err));
+    try {
+        const items = await ItemModel.find({});
+    
+        const itemArray = items.map(item => ({
+          _id:item._id,
+          name: item.name,
+          espart: item.espart,
+          mfgpart: item.mfgpart,
+          supplier: item.supplier,
+          mfg: item.mfg,
+          category: item.category,
+          available: item.available,
+          minQuantity: item.minQuantity,
+          image: item.image && item.image.data
+          ? `data:${item.image.contentType};base64,${item.image.data.toString('base64')}`
+          : null, 
+          linkToBuy: item.linkToBuy,
+          linkToBuy2: item.linkToBuy2,
+          history: item.history
+        }));  
+        res.json(itemArray);
+      } catch (err) { 
+        res.json('Error retrieving items'); 
+      }
+    
 }
 
+
+
 exports.addItems = async (req, res) => {
-    const { name, mfgpart, supplier, mfg, category, available, imgUrl,linkToBuy ,linkToBuy2,minQuantity } = req.body;
+    upload(req, res, async (err) => {
+        if (err) {
+          if (err.code === 'LIMIT_FILE_SIZE') {
+            return res.json('File size exceeds 300KB.');
+          }
+          return res.json('Error uploading file.');
+        }
+    const { name, mfgpart, supplier, mfg, category, available, linkToBuy ,linkToBuy2,minQuantity,userName } = req.body;
     try { 
         const check = await ItemModel.findOne({ name: name, mfg: mfg }) 
 
@@ -39,7 +71,18 @@ exports.addItems = async (req, res) => {
             else {
                espart="ESE"+esnum;
             }
-            await ItemModel.create({ name, espart, mfgpart, supplier, mfg, category, available, imgUrl, linkToBuy,linkToBuy2,minQuantity });
+            const date=new Date().toLocaleString();
+            await ItemModel.create({ name, espart, mfgpart, supplier, mfg, category,   available,    
+                   image: {
+                    data: req.file.buffer,
+                    contentType: req.file.mimetype,
+                  }, 
+            linkToBuy,linkToBuy2,minQuantity ,history:{
+                addedBy:userName,
+                quantity:available,
+                dateofAdding:date
+            }});
+
             res.json("Item added successfully");
         } else {  
             res.json("Product is already Available");
@@ -48,7 +91,7 @@ exports.addItems = async (req, res) => {
         console.log(err);
         res.json(err);
     }
-};
+    })};
 
 const getAdmin = async () => {
     try {
@@ -71,7 +114,7 @@ const getAdmin = async () => {
 };
  
 exports.claimItems = async (req, res) => {
-    const { name, mfg, projectName, designerName, quantity} = req.body;
+    const { name, mfg, projectName, designerName, quantity,takenBy} = req.body;
     const admin=await getAdmin();
     const date=new Date().toLocaleString();
     try { 
@@ -96,16 +139,21 @@ exports.claimItems = async (req, res) => {
             await transporter.sendMail(mailContent)
             .then((result)=>console.log("Email sent to admin for reclaiming"));
         }
-        const claim = await ItemModel.updateOne(
-            { name: name, mfg: mfg },
-            { $inc: { available: -quantity } }
-        );        
 
-        if (claim.matchedCount === 0) {
-            return res.json("Item not found.");
+      
+          const item =  await ItemModel.findOne({ name: name, mfg: mfg }); 
+          if(!item){
+            res.json('item not found');
+          }
+        else if(quantity>item.available){
+            res.json('insufficient quantity');
         }
         else{
-          const item =  await ItemModel.findOne({ name: name, mfg: mfg }); 
+       
+           await ItemModel.updateOne(
+            { name: name, mfg: mfg },
+            { $inc: { available: -quantity } }
+             );     
             if(item.available<=item.minQuantity){  
                     const mailContent = { 
                         from :{
@@ -124,15 +172,15 @@ exports.claimItems = async (req, res) => {
                     await transporter.sendMail(mailContent)
                     .then((result)=>console.log("Email sent to admin"));
             }
-            
         }
+                    
  
         const existingProject = await ProjectModel.findOne({ projectName: projectName });
          
          if (existingProject) { 
             await ProjectModel.updateOne(
                 { projectName: projectName },
-                { $push: { itemsTaken: { name: name, mfg: mfg, quantity: quantity ,dateofTaken:date} } }
+                { $push: { itemsTaken: { name: name, mfg: mfg,takenBy:takenBy, quantity: quantity ,dateofTaken:date} } }
             );
 
             return res.json("Item claimed successfully.");
@@ -141,7 +189,7 @@ exports.claimItems = async (req, res) => {
                 projectName: projectName,
                 designerName: designerName,
                 createdAt:date,
-                itemsTaken: [{ name: name, mfg: mfg, quantity: quantity,dateofTaken:date }]
+                itemsTaken: [{ name: name, mfg: mfg, takenBy:takenBy,quantity: quantity,dateofTaken:date }]
             });
             return res.json("Item claimed successfully and new project created.");
         } 
@@ -151,20 +199,7 @@ exports.claimItems = async (req, res) => {
         return res.json("An error occurred while claiming the item.");
     }
 };
-
-// const transporter = nodemailer.createTransport({
-//     service:"gmail",
-//     host:"smtp.gmail.com",
-//     port:587,
-//     secure:false,
-//     auth:{
-//       user:"kumarautos105@gmail.com",
-//       pass: process.env.EMAIL_PASSKEY
-//     }, 
-//     tls: {
-//       rejectUnauthorized: false
-//     }
-//   }) 
+ 
   const transporter = nodemailer.createTransport({
     service: "Outlook365",
     host: "smtp.office365.com",
@@ -179,3 +214,5 @@ exports.claimItems = async (req, res) => {
       rejectUnauthorized: false,
     },
   });
+ 
+  

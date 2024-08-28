@@ -8,4 +8,4 @@ router.post("/addItems",Controller.addItems);
 router.get("/getItems",Controller.getItems);
 router.post("/claimItems",Controller.claimItems);
 
-module.exports=router;
+module.exports=router; 

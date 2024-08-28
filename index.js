@@ -1,8 +1,8 @@
 const express = require('express')
 const app = express();
-const mongoose = require('mongoose');
+const mongoose = require('mongoose'); 
 const cors = require("cors");
-const cookieParser = require("cookie-parser");
+const cookieParser = require("cookie-parser"); 
 
 const dotenv = require('dotenv');
 dotenv.config({ path: './.env' }); 
@@ -23,7 +23,7 @@ mongoose.connect(url);
 app.use("/",require('./routes/loginRoutes'));  
 app.use("/home",require('./routes/homeRoutes'));  
 app.use("/dashboard",require('./routes/adminRoutes'));  
-
+ 
 app.listen(PORT,()=>{
     console.log('app is listening');
 })
