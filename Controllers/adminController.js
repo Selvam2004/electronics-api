@@ -73,3 +73,8 @@ exports.getProjects = async(req,res)=>{
   .then(data=>res.json(data))
   .catch(err=>res.json(err))
 }
+exports.getProjectbyId = async(req,res)=>{
+  await ProjectModel.findById(red.params.id)
+  .then(data=>res.json(data.itemsTaken))
+  .catch(err=>res.json(err))
+}
