@@ -133,7 +133,7 @@ exports.claimItems = async (req, res) => {
                 to: `${admin}`,
                 subject:"Reclaiming Product",
                 html:`<h3>Hello! Admin ! </h3>
-                <p> ${name} has been claimed again for the project ${projectName} by ${designerName}</p> `
+                <p> ${name} has been claimed again for the project ${projectName} by ${takenBy} and the design engineer is ${designerName}</p> `
                 
               }
             await transporter.sendMail(mailContent)
