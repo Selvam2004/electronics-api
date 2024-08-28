@@ -44,7 +44,7 @@ exports.updateProduct = async (req, res) => {
     res.json("Updated Successfully");
   }
 };
-
+  
 exports.deleteProduct = async (req, res) => {
   const { _id } = req.body;
   ItemModel.deleteOne({ _id: _id })
@@ -73,8 +73,15 @@ exports.getProjects = async(req,res)=>{
   .then(data=>res.json(data))
   .catch(err=>res.json(err))
 }
-exports.getProjectbyId = async(req,res)=>{
-  await ProjectModel.findById(red.params.id)
-  .then(data=>res.json(data.itemsTaken))
-  .catch(err=>res.json(err))
-}
+exports.getProjectbyId = async (req, res) => {
+  const { _id } = req.params; 
+  try {
+    const project = await ProjectModel.findById(_id);
+    if (!project) {
+      return res.json({ message: 'Project not found' });
+    } 
+    res.json(project.itemsTaken);
+  } catch (error) { 
+    res.json({ message: 'Server error', error });
+  }
+};
