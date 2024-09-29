@@ -63,10 +63,10 @@ exports.addItems = async (req, res) => {
             const esnum = await getESpart();
             let espart="";
             if(category==="General"){
-               espart="ESG-"+type+"0000"+esnum;
+               espart="ESGN-"+type+"0000"+esnum;
             }
             else if(category==="Mechanical"){
-               espart="ESM-"+type+"0000"+esnum;
+               espart="ESMH-"+type+"0000"+esnum;
             }
             else {
                espart="ESEL-"+type+"0000"+esnum;
@@ -115,7 +115,7 @@ const getAdmin = async () => {
 };
  
 exports.claimItems = async (req, res) => {
-    const { name, mfg, projectName, designerName, quantity,takenBy} = req.body;
+    const { name, mfg, projectName, designerName, quantity,takenBy,userEmail,acknowledge} = req.body;
     const admin=await getAdmin();
     const date=new Date().toLocaleString();
     try { 
@@ -140,6 +140,21 @@ exports.claimItems = async (req, res) => {
             await transporter.sendMail(mailContent)
             .then((result)=>console.log("Email sent to admin for reclaiming"));
         }
+
+        const mailContent = { 
+          from :{
+            name:"ElectroSolve",
+            address:"stock.esolve@outlook.com"
+          },
+          to: `${userEmail}`,
+          subject:"Product Is Claimed",
+          cc:acknowledge,
+          html:`<h3>Hello! Guys </h3>
+          <p> ${item.name} is Claimed For This Project-${projectName}</p>`
+          
+        }
+      await transporter.sendMail(mailContent)
+      .then((result)=>console.log("Email sent to admin"));
 
       
           const item =  await ItemModel.findOne({ name: name, mfg: mfg }); 
