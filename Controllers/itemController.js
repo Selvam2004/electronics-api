@@ -10,7 +10,7 @@ const upload = multer({ storage: storage ,limits: { fileSize: 300 * 1024 },}).si
 const getESpart = async () => {
     let num = ''; 
     do {
-        num = Array.from({length: 25}, () => Math.floor(Math.random() * 10)).join('');
+        num = Array.from({length: 6}, () => Math.floor(Math.random() * 10)).join('');
       } while (await ItemModel.findOne({ espart: num }));
   
     return num;
@@ -55,7 +55,7 @@ exports.addItems = async (req, res) => {
           }
           return res.json('Error uploading file.');
         }
-    const { name, mfgpart, supplier, mfg, category, available, linkToBuy ,linkToBuy2,minQuantity,userName } = req.body;
+    const { name, mfgpart, supplier, mfg, category, available, linkToBuy ,linkToBuy2,minQuantity,userName ,type} = req.body;
     try { 
         const check = await ItemModel.findOne({ name: name, mfg: mfg }) 
 
@@ -63,13 +63,13 @@ exports.addItems = async (req, res) => {
             const esnum = await getESpart();
             let espart="";
             if(category==="General"){
-               espart="ESG"+esnum;
+               espart="ESG-"+type+"0000"+esnum;
             }
             else if(category==="Mechanical"){
-               espart="ESM "+esnum;
+               espart="ESM-"+type+"0000"+esnum;
             }
             else {
-               espart="ESE"+esnum;
+               espart="ESEL-"+type+"0000"+esnum;
             }
             const date=new Date().toLocaleString();
             await ItemModel.create({ name, espart, mfgpart, supplier, mfg, category,   available,    
@@ -82,8 +82,9 @@ exports.addItems = async (req, res) => {
                 quantity:available,
                 dateofAdding:date
             }});
-
+            console.log(espart);
             res.json("Item added successfully");
+
         } else {  
             res.json("Product is already Available");
         }
