@@ -141,20 +141,7 @@ exports.claimItems = async (req, res) => {
             .then((result)=>console.log("Email sent to admin for reclaiming"));
         }
 
-        const mailContent = { 
-          from :{
-            name:"ElectroSolve",
-            address:"stock.esolve@outlook.com"
-          },
-          to: `${userEmail}`,
-          subject:"Product Is Claimed",
-          cc:acknowledge,
-          html:`<h3>Hello! Guys </h3>
-          <p> ${item.name} is Claimed For This Project-${projectName}</p>`
-          
-        }
-      await transporter.sendMail(mailContent)
-      .then((result)=>console.log("Email sent to admin"));
+
 
       
           const item =  await ItemModel.findOne({ name: name, mfg: mfg }); 
@@ -198,7 +185,20 @@ exports.claimItems = async (req, res) => {
                 { projectName: projectName },
                 { $push: { itemsTaken: { name: name, mfg: mfg,takenBy:takenBy, quantity: quantity ,dateofTaken:date} } }
             );
-
+            const mailContent = { 
+              from :{
+                name:"ElectroSolve",
+                address:"stock.esolve@outlook.com"
+              },
+              to: `${userEmail}`,
+              subject:"Product Is Claimed",
+              cc:acknowledge,
+              html:`<h3>Hello! Guys </h3>
+              <p> ${item.name} is Claimed For This Project-${projectName}</p>`
+              
+            }
+          await transporter.sendMail(mailContent)
+          .then((result)=>console.log("Email sent to admin"));
             return res.json("Item claimed successfully.");
         } else { 
             await ProjectModel.create({
@@ -207,6 +207,20 @@ exports.claimItems = async (req, res) => {
                 createdAt:date,
                 itemsTaken: [{ name: name, mfg: mfg, takenBy:takenBy,quantity: quantity,dateofTaken:date }]
             });
+            const mailContent = { 
+              from :{
+                name:"ElectroSolve",
+                address:"stock.esolve@outlook.com"
+              },
+              to: `${userEmail}`,
+              subject:"Product Is Claimed",
+              cc:acknowledge,
+              html:`<h3>Hello! Guys </h3>
+              <p> ${item.name} is Claimed For This Project-${projectName}</p>`
+              
+            }
+          await transporter.sendMail(mailContent)
+          .then((result)=>console.log("Email sent to admin"));
             return res.json("Item claimed successfully and new project created.");
         } 
 
