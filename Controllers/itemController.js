@@ -27,6 +27,7 @@ exports.getItems = async (req,res) =>{
           espart: item.espart,
           mfgpart: item.mfgpart,
           supplier: item.supplier,
+          supplier:item.supplierId,
           mfg: item.mfg,
           category: item.category,
           available: item.available,
@@ -55,7 +56,7 @@ exports.addItems = async (req, res) => {
           }
           return res.json('Error uploading file.');
         }
-    const { name, mfgpart, supplier, mfg, category, available, linkToBuy ,linkToBuy2,minQuantity,userName ,type} = req.body;
+    const { name, mfgpart, supplier,supplierId, mfg, category, available, linkToBuy ,linkToBuy2,minQuantity,userName ,type} = req.body;
     try { 
         const check = await ItemModel.findOne({ name: name, mfg: mfg }) 
 
@@ -72,7 +73,7 @@ exports.addItems = async (req, res) => {
                espart="ESEL-"+type+"0000"+esnum;
             }
             const date=new Date().toLocaleString();
-            await ItemModel.create({ name, espart, mfgpart, supplier, mfg, category,   available,    
+            await ItemModel.create({ name, espart, mfgpart, supplier,supplierId, mfg, category,   available,    
                    image: {
                     data: req.file.buffer,
                     contentType: req.file.mimetype,
@@ -129,7 +130,7 @@ exports.claimItems = async (req, res) => {
             const mailContent = { 
                 from :{
                   name:"ElectroSolve",
-                  address:"kumarautos105@gmail.com"
+                  address:process.env.EMAIL
                 },
                 to: `${admin}`,
                 subject:"Reclaiming Product",
@@ -161,7 +162,7 @@ exports.claimItems = async (req, res) => {
                     const mailContent = { 
                         from :{
                           name:"ElectroSolve",
-                          address:"kumarautos105@gmail.com"
+                          address:process.env.EMAIL
                         },
                         to: `${admin}`,
                         subject:"Product Insufficient",
@@ -188,7 +189,7 @@ exports.claimItems = async (req, res) => {
             const mailContent = { 
               from :{
                 name:"ElectroSolve",
-                address:"kumarautos105@gmail.com"
+                address:process.env.EMAIL
               },
               to: `${userEmail}`,
               subject:"Product Is Claimed",
@@ -210,7 +211,7 @@ exports.claimItems = async (req, res) => {
             const mailContent = { 
               from :{
                 name:"ElectroSolve",
-                address:"kumarautos105@gmail.com"
+                address:process.env.EMAIL
               },
               to: `${userEmail}`,
               subject:"Product Is Claimed",
@@ -235,7 +236,7 @@ const transporter = nodemailer.createTransport({
   port: 587,
   secure: false, 
   auth: {
-    user: "kumarautos105@gmail.com",
+    user: process.env.EMAIL,
     pass: process.env.EMAIL_PASSKEY,
   },
   secure: false, // Set to true if you want to use SSL (usually for port 465)
