@@ -27,7 +27,7 @@ exports.getItems = async (req,res) =>{
           espart: item.espart,
           mfgpart: item.mfgpart,
           supplier: item.supplier,
-          supplier:item.supplierId,
+          supplierId:item.supplierId,
           mfg: item.mfg,
           category: item.category,
           available: item.available,
